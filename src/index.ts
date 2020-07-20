@@ -1,8 +1,10 @@
 import * as express from 'express';
 import { SERVER_PORT } from './environment';
+import { FormTemplate } from './database';
 
 const app = express();
 
+FormTemplate.findAll().then(console.log);
 enum InputType {
   TEXT,
   INTEGER,
