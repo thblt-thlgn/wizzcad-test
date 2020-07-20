@@ -30,3 +30,20 @@ $ yarn db:migrate
 # Start
 $ yarn start
 ```
+
+# Available routes
+
+## GET /form-templates
+
+Retrieve all the form templates
+
+## GET /form-templates/:id
+
+Retrieve all one form templates
+
+## POST /form-templates
+
+Create a form template
+
+-> Errors are not handled
+-> Model typings are not set yet (check out feature/sequelize-typing for more details)

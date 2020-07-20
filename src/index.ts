@@ -32,13 +32,7 @@ const formTemplateValidator = Joi.object().keys({
 // Retrieve all the form-templates
 app.get('/form-templates', async (req, res) => {
   const formTemplates = await FormTemplate.findAll({
-    include: [
-      FormInput,
-      {
-        target: FormSection,
-        include: [FormInput, FormSection],
-      },
-    ],
+    include: [FormInput, FormSection],
   });
   res.json({ formTemplates });
 });
@@ -59,8 +53,11 @@ app.put('/form-templates/:id', (req, res) => {});
 // Retrieve a form-template
 app.get('/form-templates/:id', async (req, res) => {
   const { id } = req.params;
-  const formTemplate = await FormTemplate.findByPk(id);
-  if (formTemplate) {
+  const formTemplate = await FormTemplate.findOne({
+    where: { id },
+    include: [FormInput, FormSection],
+  });
+  if (!formTemplate) {
     throw new ResourceNotFoundError('form-template', id);
   }
   res.json({ formTemplate });
