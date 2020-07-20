@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { SERVER_PORT } from './environment';
-import { FormTemplate, FormInput } from './database';
+import { FormTemplate, FormInput, FormSection } from './database';
 import { ResourceNotFoundError } from './errors';
 import { createValidator } from 'express-joi-validation';
 import * as Joi from '@hapi/joi';
@@ -18,20 +18,27 @@ const formInputValidator = Joi.object().keys({
 
 const formSectionValidator = Joi.object().keys({
   name: Joi.string().optional(),
+  // recursive objects is causing ts issues
   // subSections: Joi.array().items(formSectionValidator).optional(),
   formInputs: Joi.array().items(formInputValidator).min(1),
 });
 
 const formTemplateValidator = Joi.object().keys({
   name: Joi.string().optional(),
-  sections: Joi.array().items(formSectionValidator).optional(),
+  formSections: Joi.array().items(formSectionValidator).optional(),
   formInputs: Joi.array().items(formInputValidator).optional(),
 });
 
 // Retrieve all the form-templates
 app.get('/form-templates', async (req, res) => {
   const formTemplates = await FormTemplate.findAll({
-    include: FormInput,
+    include: [
+      FormInput,
+      {
+        target: FormSection,
+        include: [FormInput, FormSection],
+      },
+    ],
   });
   res.json({ formTemplates });
 });
@@ -39,18 +46,8 @@ app.get('/form-templates', async (req, res) => {
 // Create a form-template
 app.post('/form-templates', validator.body(formTemplateValidator), async (req, res) => {
   const { body } = req;
-  // const result = await sequelize.transaction(async (transaction) => {
-  //   const formTemplate = (await FormTemplate.create(body, {
-  //     transaction,
-  //   })) as any;
-  //   const formInputs = await createManyInput(formTemplate.id, body.inputs, transaction);
-  //   return { formTemplate, formInputs };
-  // });
-
-  // res.json({ formTemplate: result });
-
   const formTemplate = await FormTemplate.create(body, {
-    include: FormInput,
+    include: [FormInput, FormSection],
   });
 
   res.json({ formTemplate });
