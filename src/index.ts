@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { SERVER_PORT } from './environment';
+
 const app = express();
 
 enum InputType {

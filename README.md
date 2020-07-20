@@ -24,6 +24,9 @@ Feel free to use any CLI and libraries available :)
 # Install dependencies
 $ yarn install
 
+# Init db
+$ yarn db:migrate
+
 # Start
 $ yarn start
 ```
