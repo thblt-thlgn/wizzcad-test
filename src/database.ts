@@ -1,4 +1,5 @@
 import { Sequelize, DataTypes } from 'sequelize';
+import { InputType } from './typing';
 
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -14,7 +15,7 @@ export const FormInput = sequelize.define(
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['TEXT', 'INTEGER', 'FLOAT', 'BOOLEAN', 'ENUM'],
+      values: Object.values(InputType),
       allowNull: false,
     },
   },

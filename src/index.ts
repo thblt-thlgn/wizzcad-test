@@ -1,47 +1,58 @@
 import * as express from 'express';
 import { SERVER_PORT } from './environment';
-import { FormTemplate } from './database';
+import { FormTemplate, FormInput } from './database';
 import { ResourceNotFoundError } from './errors';
+import { createValidator } from 'express-joi-validation';
+import * as Joi from '@hapi/joi';
+import { InputType } from './typing';
+import * as bodyParser from 'body-parser';
 
 const app = express();
+app.use(bodyParser.json());
+const validator = createValidator({});
 
-enum InputType {
-  TEXT,
-  INTEGER,
-  FLOAT,
-  BOOLEAN,
-  ENUM,
-}
+const formInputValidator = Joi.object().keys({
+  name: Joi.string().required(),
+  type: Joi.string().valid(...Object.values(InputType)),
+});
 
-interface Input {
-  id: number; // generated
-  name: string;
-  type: InputType;
-}
+const formSectionValidator = Joi.object().keys({
+  name: Joi.string().optional(),
+  // subSections: Joi.array().items(formSectionValidator).optional(),
+  formInputs: Joi.array().items(formInputValidator).min(1),
+});
 
-interface Section {
-  id: number; // generated
-  name?: string;
-  subSections: Section[];
-  inputs: Input[];
-}
-
-interface FormTemplate {
-  id: number; // generated
-  name?: string;
-  sections: Section[];
-  inputs: Input[];
-}
+const formTemplateValidator = Joi.object().keys({
+  name: Joi.string().optional(),
+  sections: Joi.array().items(formSectionValidator).optional(),
+  formInputs: Joi.array().items(formInputValidator).optional(),
+});
 
 // Retrieve all the form-templates
 app.get('/form-templates', async (req, res) => {
-  const formTemplates = await FormTemplate.findAll();
+  const formTemplates = await FormTemplate.findAll({
+    include: FormInput,
+  });
   res.json({ formTemplates });
 });
 
 // Create a form-template
-app.post('/form-templates', async (req, res) => {
-  const formTemplate = await FormTemplate.create({ name: 'test' });
+app.post('/form-templates', validator.body(formTemplateValidator), async (req, res) => {
+  const { body } = req;
+  // const result = await sequelize.transaction(async (transaction) => {
+  //   const formTemplate = (await FormTemplate.create(body, {
+  //     transaction,
+  //   })) as any;
+  //   const formInputs = await createManyInput(formTemplate.id, body.inputs, transaction);
+  //   return { formTemplate, formInputs };
+  // });
+
+  // res.json({ formTemplate: result });
+
+  const formTemplate = await FormTemplate.create(body, {
+    include: FormInput,
+  });
+
   res.json({ formTemplate });
 });
 
