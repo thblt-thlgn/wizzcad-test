@@ -1,11 +1,13 @@
 import * as express from 'express';
 import { SERVER_PORT } from './environment';
-import { FormTemplate, FormInput, FormSection } from './database';
 import { ResourceNotFoundError } from './errors';
 import { createValidator } from 'express-joi-validation';
 import * as Joi from '@hapi/joi';
 import { InputType } from './typing';
 import * as bodyParser from 'body-parser';
+import FormTemplate from './models/form-template';
+import FormInput from './models/form-input';
+import FormSection from './models/form-section';
 
 const app = express();
 app.use(bodyParser.json());

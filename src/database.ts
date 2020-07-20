@@ -1,13 +1,15 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import { InputType } from './typing';
+import FormInput from './models/form-input';
+import FormSection from './models/form-section';
+import FormTemplate from './models/form-template';
 
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: './database.sqlite',
 });
 
-export const FormInput = sequelize.define(
-  'formInputs',
+FormInput.init(
   {
     name: {
       type: DataTypes.STRING,
@@ -20,12 +22,13 @@ export const FormInput = sequelize.define(
     },
   },
   {
+    sequelize,
+    tableName: 'formInputs',
     paranoid: true,
   },
 );
 
-export const FormSection = sequelize.define(
-  'formSections',
+FormSection.init(
   {
     name: {
       type: DataTypes.STRING,
@@ -33,12 +36,13 @@ export const FormSection = sequelize.define(
     },
   },
   {
+    sequelize,
+    tableName: 'formSections',
     paranoid: true,
   },
 );
 
-export const FormTemplate = sequelize.define(
-  'formTemplates',
+FormTemplate.init(
   {
     name: {
       type: DataTypes.STRING,
@@ -46,6 +50,8 @@ export const FormTemplate = sequelize.define(
     },
   },
   {
+    sequelize,
+    tableName: 'formTemplates',
     paranoid: true,
   },
 );

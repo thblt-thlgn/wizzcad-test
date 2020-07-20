@@ -6,19 +6,15 @@ export enum InputType {
   ENUM = 'ENUM',
 }
 
-export interface Input {
+export interface InputAttributes {
   name: string;
   type: InputType;
 }
 
-export interface Section {
+export interface FormSectionAttributes {
   name?: string;
-  subSections: Section[];
-  inputs: Input[];
 }
 
-export interface Form {
+export interface FormTemplateAttributes {
   name?: string;
-  sections: Section[];
-  inputs: Input[];
 }
